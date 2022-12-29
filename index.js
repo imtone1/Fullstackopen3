@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
+const cors =require('cors')
 var morgan = require('morgan')
+
+app.use (cors())
 app.use(express.json()) //tarvitaan post pyyntöihin
 // app.use(morgan('tiny'))
 morgan.token('body', req => {
@@ -77,6 +80,11 @@ app.get('/api/persons/:id', (request, response) => {
         error: 'name or number is missing' 
       })
     }
+    else if (body.name==="" || body.number===""){
+      return response.status(400).json({ 
+        error: 'name or number is missing' 
+      })
+    }
     else if(persons.find(person => person.name === body.name)){
       return response.status(406).json({ 
         error: 'name must be unique' 
@@ -102,7 +110,7 @@ app.get('/info', (req, res) => {
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${d.toString()}</p>`)
   })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
