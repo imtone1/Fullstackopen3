@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-
+app.use(express.json()) //tarvitaan post pyyntöihin
 let  persons=[
     { 
       "name": "Arto Hellas", 
@@ -47,6 +47,39 @@ app.get('/api/persons/:id', (request, response) => {
     persons = persons.filter(person => person.id !== id)
   
     response.status(204).end()
+  })
+
+  const generateId = () => {
+    const randId = persons.length > 0
+      ? Math.floor(Math.random() * 10000)
+      : 0
+    const person = persons.find(person => person.id === randId)
+    // console.log("random id",randId)
+    // console.log("person",person)
+    
+    return randId
+  }
+  
+  app.post('/api/persons', (request, response) => {
+    const body = request.body
+  
+    if (!body.name) {
+      return response.status(400).json({ 
+        error: 'content missing' 
+      })
+    }
+    
+    // console.log(body)
+    
+    const postPerson = {
+      name: body.name,
+      number: body.number,
+      id: generateId(),
+    }
+  // console.log("postperson", postPerson)
+    persons = persons.concat(postPerson)
+  
+    response.json(postPerson)
   })
 
 app.get('/info', (req, res) => {
