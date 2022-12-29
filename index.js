@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
+var morgan = require('morgan')
 app.use(express.json()) //tarvitaan post pyyntöihin
+app.use(morgan('tiny'))
 let  persons=[
     { 
       "name": "Arto Hellas", 
