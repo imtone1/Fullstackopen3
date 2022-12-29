@@ -62,14 +62,20 @@ app.get('/api/persons/:id', (request, response) => {
   
   app.post('/api/persons', (request, response) => {
     const body = request.body
-  
-    if (!body.name) {
+    console.log(persons)
+    const personName = persons.find(person => person.name === body.name)
+    console.log("personName", personName)
+    if (!body.name || !body.number) {
       return response.status(400).json({ 
-        error: 'content missing' 
+        error: 'name or number is missing' 
       })
     }
-    
-    // console.log(body)
+    else if(persons.find(person => person.name === body.name)){
+      return response.status(406).json({ 
+        error: 'name must be unique' 
+      })
+    }else{
+      // console.log(body)
     
     const postPerson = {
       name: body.name,
@@ -80,6 +86,8 @@ app.get('/api/persons/:id', (request, response) => {
     persons = persons.concat(postPerson)
   
     response.json(postPerson)
+    }
+    
   })
 
 app.get('/info', (req, res) => {
