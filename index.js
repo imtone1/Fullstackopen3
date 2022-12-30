@@ -1,7 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors =require('cors')
 var morgan = require('morgan')
+const Person=require('./models/person')
 app.use(express.static('build'))
 app.use (cors())
 app.use(express.json()) //tarvitaan post pyyntöihin
@@ -39,7 +41,10 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  // res.json(persons)
+  Person.find({}).then(person => {
+    res.json(person)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
