@@ -75,39 +75,56 @@ app.get('/api/persons/:id', (request, response) => {
     return randId
   }
   
+  // app.post('/api/persons', (request, response) => {
+  //   const body = request.body
+  //   // console.log(persons)
+  //   const personName = persons.find(person => person.name === body.name)
+  //   // console.log("personName", personName)
+  //   if (!body.name || !body.number) {
+  //     return response.status(400).json({ 
+  //       error: 'name or number is missing' 
+  //     })
+  //   }
+  //   else if (body.name==="" || body.number===""){
+  //     return response.status(400).json({ 
+  //       error: 'name or number is missing' 
+  //     })
+  //   }
+  //   else if(persons.find(person => person.name === body.name)){
+  //     return response.status(406).json({ 
+  //       error: 'name must be unique' 
+  //     })
+  //   }else{
+  //     // console.log(body)
+    
+  //   const postPerson = {
+  //     name: body.name,
+  //     number: body.number,
+  //     id: generateId(),
+  //   }
+  // // console.log("postperson", postPerson)
+  //   persons = persons.concat(postPerson)
+  
+  //   response.json(postPerson)
+  //   }
+    
+  // })
+
   app.post('/api/persons', (request, response) => {
     const body = request.body
-    // console.log(persons)
-    const personName = persons.find(person => person.name === body.name)
-    // console.log("personName", personName)
-    if (!body.name || !body.number) {
-      return response.status(400).json({ 
-        error: 'name or number is missing' 
-      })
-    }
-    else if (body.name==="" || body.number===""){
-      return response.status(400).json({ 
-        error: 'name or number is missing' 
-      })
-    }
-    else if(persons.find(person => person.name === body.name)){
-      return response.status(406).json({ 
-        error: 'name must be unique' 
-      })
-    }else{
-      // console.log(body)
-    
-    const postPerson = {
-      name: body.name,
-      number: body.number,
-      id: generateId(),
-    }
-  // console.log("postperson", postPerson)
-    persons = persons.concat(postPerson)
   
-    response.json(postPerson)
+    if (body.name === undefined) {
+      return response.status(400).json({ error: 'name missing' })
     }
-    
+  
+    const person = new Person({
+      name: body.name,
+      number: body.number
+    })
+  
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
   })
 
 app.get('/info', (req, res) => {
