@@ -7,6 +7,7 @@ const Person=require('./models/person')
 app.use(express.static('build'))
 app.use (cors())
 app.use(express.json()) //tarvitaan post pyyntöihin
+
 // app.use(morgan('tiny'))
 morgan.token('body', req => {
   return JSON.stringify(req.body)
@@ -57,23 +58,31 @@ app.get('/api/persons/:id', (request, response) => {
       }
   })
 
-  app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
+  // app.delete('/api/persons/:id', (request, response) => {
+  //   const id = Number(request.params.id)
+  //   persons = persons.filter(person => person.id !== id)
   
-    response.status(204).end()
-  })
+  //   response.status(204).end()
+  // })
 
-  const generateId = () => {
-    const randId = persons.length > 0
-      ? Math.floor(Math.random() * 10000)
-      : 0
-    const person = persons.find(person => person.id === randId)
-    // console.log("random id",randId)
-    // console.log("person",person)
+  // const generateId = () => {
+  //   const randId = persons.length > 0
+  //     ? Math.floor(Math.random() * 10000)
+  //     : 0
+  //   const person = persons.find(person => person.id === randId)
+  //   // console.log("random id",randId)
+  //   // console.log("person",person)
     
-    return randId
-  }
+  //   return randId
+  // }
+
+  //tietokanta
+  app.delete('/api/persons/:id', (request, response) => {
+    Person.findByIdAndRemove(request.params.id)
+      .then(result => {
+        response.status(204).end()
+      })
+  })
   
   // app.post('/api/persons', (request, response) => {
   //   const body = request.body
@@ -131,6 +140,25 @@ app.get('/info', (req, res) => {
   var d = Date(Date.now());
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${d.toString()}</p>`)
   })
+
+  const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+  }
+  
+  // olemattomien osoitteiden käsittely, tarkoituksella kaikkien pyyntöjen jälkeen, koska tämä vastaa kaikkiin pyyntöihin
+  app.use(unknownEndpoint)
+
+  const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+  
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    }
+  
+    next(error)
+  }
+//virheellisten pyyntöjen käsittely
+app.use(errorHandler) //tarkoituksena viimeisenä
 
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
