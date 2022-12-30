@@ -41,11 +41,12 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
 })
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res,next) => {
   // res.json(persons)
   Person.find({}).then(person => {
     res.json(person)
   })
+  .catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -77,11 +78,12 @@ app.get('/api/persons/:id', (request, response) => {
   // }
 
   //tietokanta
-  app.delete('/api/persons/:id', (request, response) => {
+  app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndRemove(request.params.id)
       .then(result => {
         response.status(204).end()
       })
+      .catch(error => next(error))
   })
   
   // app.post('/api/persons', (request, response) => {
@@ -119,7 +121,7 @@ app.get('/api/persons/:id', (request, response) => {
     
   // })
 
-  app.post('/api/persons', (request, response) => {
+  app.post('/api/persons', (request, response, next) => {
     const body = request.body
   
     if (body.name === undefined) {
@@ -133,7 +135,7 @@ app.get('/api/persons/:id', (request, response) => {
   
     person.save().then(savedPerson => {
       response.json(savedPerson)
-    })
+    }).catch(error => next(error))
   })
 
 app.get('/info', (req, res) => {
