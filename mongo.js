@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-mongoose.set('strictQuery', false);
+mongoose.set('strictQuery', false)
 // console.log(process.argv.length)
 const password = process.argv[2]
 const name=process.argv[3]
@@ -20,30 +20,30 @@ const Person = mongoose.model('Person', peopleSchema)
 const person = new Person({
   name: name,
   number: number
-    
+
 })
 
 if (process.argv.length <3) {
-    console.log('give password as argument')
+  console.log('give password as argument')
+  process.exit(1)
+}
+else if (process.argv.length === 3) {
+  console.log('phonebook:')
+  Person.find({}).then(result => {
+    result.forEach(person => {
+      console.log(`${person.name} ${person.number}`)
+    })
+    mongoose.connection.close()
     process.exit(1)
-  }
-else if (process.argv.length == 3) {
-    console.log('phonebook:')
-    Person.find({}).then(result => {
-        result.forEach(person => {
-          console.log(`${person.name} ${person.number}`)
-        })
-        mongoose.connection.close()
-        process.exit(1)
-      })
-    
-  }
+  })
+
+}
 else if (process.argv.length<5) {
-    console.log('give name and number')
-    process.exit(1)
-  }
+  console.log('give name and number')
+  process.exit(1)
+}
 else{
-person.save().then(result => {
-  console.log(`added ${name} number ${number} to phonebook`)
-  mongoose.connection.close()
-})}
+  person.save().then(result => {
+    console.log(`added ${result.name} number ${result.number} to phonebook`)
+    mongoose.connection.close()
+  })}
